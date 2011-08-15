@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : aiCharacter.h
-// Created by  : Deepak, John, Navin
-// Date        :  8 Sep 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -31,37 +31,55 @@
 //                of the character. This update function is called by the AIWorld update.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Linear Kinematics for Dummies who can't even do their own algebrah:
+// 
+// Velocity = delta Position / Time
+// Velocity * Time = delta Position
+//
+// Acceleration = delta Velocity / Time
+// Acceleration * Time =  delta Velocity
+//
+// Acceleration = Force / Mass
+// Force = Mass * Acceleration
 
 class AIBehaviors;
 class AIWorld;
 
 class EXPCL_PANDAAI AICharacter {
- public:
-  double _mass;
-  double _max_force;
-  LVecBase3f _velocity;
-  LVecBase3f _steering_force;
-  string _name;
-  double _movt_force;
-  unsigned int _ai_char_flock_id;
-  AIWorld *_world;
-  AIBehaviors *_steering;
-  NodePath _window_render;
-  NodePath _ai_char_np;
-  bool _pf_guide;
+  public:
+    double _mass;
+    double _max_speed;
+    LVecBase3f _velocity;
+    LVecBase3f _steering_force;
+    string _name;
+    double _max_acceleration;
+    double _max_force;
+    double _delta_t;
+    
+    AIWorld *_world;
+    AIBehaviors *_steering;
+    NodePath _window_render;
+    NodePath _ai_char_np;
+    bool _pf_guide;
 
-  void update();
-  void set_velocity(LVecBase3f vel);
-  void set_char_render(NodePath render);
-  NodePath get_char_render();
+    void update();
+    void set_velocity(LVecBase3f vel);
+    void set_char_render(NodePath render);
+    NodePath get_char_render();
 
-PUBLISHED:
+  PUBLISHED:
     double get_mass();
     void set_mass(double m);
 
     LVecBase3f get_velocity();
 
-    double get_max_force();
+    double get_max_speed();
+    void set_max_speed(double max_speed);
+
+	  double get_max_acceleration();
+    void set_max_acceleration(double max_acceleration);
+
+	  double get_max_force();
     void set_max_force(double max_force);
 
     NodePath get_node_path();
@@ -72,7 +90,7 @@ PUBLISHED:
     // This function is used to enable or disable the guides for path finding.
     void set_pf_guide(bool pf_guide);
 
-    AICharacter(string model_name, NodePath model_np, double mass, double movt_force, double max_force);
+    AICharacter(string model_name, NodePath model_np, double mass, double max_acceleration, double max_speed);
     ~AICharacter();
 };
 

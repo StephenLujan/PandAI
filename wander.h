@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : wander.h
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -20,17 +20,15 @@
 
 class AICharacter;
 
-class EXPCL_PANDAAI Wander {
+class EXPCL_PANDAAI Wander : public SteeringObjective {
   public:
-    AICharacter *_ai_char;
     double _wander_radius;
     LVecBase3f _wander_target;
-    float _wander_weight;
     int _flag;
     LVecBase3f _init_pos;
     double _area_of_effect;
 
-    Wander(AICharacter *ai_ch, double wander_radius, int flag, double aoe, float wander_weight);
+    Wander(AICharacter *ai_ch, double wander_radius, int flag, double aoe, float max_weight = 1.0);
     LVecBase3f do_wander();
     ~Wander();
 };

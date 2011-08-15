@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : evade.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -16,16 +16,13 @@
 #include "evade.h"
 
 Evade::Evade(AICharacter *ai_ch, NodePath target_object, double panic_distance,
-                                          double relax_distance, float evade_wt) {
-  _ai_char = ai_ch;
+                                          double relax_distance, float max_weight)
+: SteeringObjective(ai_ch, max_weight) {
+
 
   _evade_target = target_object;
-  _evade_distance = panic_distance;
-  _evade_relax_distance = relax_distance;
-  _evade_weight = evade_wt;
-
-  _evade_done = true;
-  _evade_activate_done = false;
+  _panic_distance = panic_distance;
+  _relax_distance = relax_distance;
 }
 
 Evade::~Evade() {
@@ -33,7 +30,7 @@ Evade::~Evade() {
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// Function : do_evade
+// Function : activation_check
 // Description : This function performs the evade and returns an evade force which is used
 //                in the calculate_prioritized function.
 //                In case the AICharacter is past the (panic + relax) distance,
@@ -42,47 +39,40 @@ Evade::~Evade() {
 
 /////////////////////////////////////////////////////////////////////////////////
 
-LVecBase3f Evade::do_evade() {
+LVecBase3f Evade::get_desired_velocity() {
   assert(_evade_target && "evade target not assigned");
 
   _evade_direction = _ai_char->_ai_char_np.get_pos(_ai_char->_window_render) - _evade_target.get_pos(_ai_char->_window_render);
   double distance = _evade_direction.length();
 
-  _evade_direction.normalize();
-  LVecBase3f desired_force = _evade_direction * _ai_char->_movt_force;
-
-  if(distance > (_evade_distance + _evade_relax_distance)) {
-    if((_ai_char->_steering->_behaviors_flags | _ai_char->_steering->_evade) == _ai_char->_steering->_evade) {
-      _ai_char->_steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
-    }
-    _ai_char->_steering->turn_off("evade");
-    _ai_char->_steering->turn_on("evade_activate");
-    _evade_done = true;
+  if(distance > _panic_distance + _relax_distance) {
+    _active = false;
     return(LVecBase3f(0.0, 0.0, 0.0));
   }
-  else {
-      _evade_done = false;
-      return(desired_force);
-  }
+
+  _evade_direction.normalize();
+  _weight = distance / (_panic_distance + _relax_distance) * _max_weight;
+  LVecBase3f desired_velocity = _evade_direction * _ai_char->_max_speed;
+
+  return(desired_velocity);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// Function : evade_activate
+// Function : activation_check
 // Description : This function checks for whether the target is within the panic distance.
 //                When this is true, it calls the do_evade function and sets the evade direction.
 //                This function is not to be used by the user.
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void Evade::evade_activate() {
+void Evade::activation_check() {
     _evade_direction = (_ai_char->_ai_char_np.get_pos(_ai_char->_window_render) - _evade_target.get_pos(_ai_char->_window_render));
   double distance = _evade_direction.length();
-  _evade_activate_done = false;
+  //_evade_activate_done = false;
 
-  if(distance < _evade_distance) {
-      _ai_char->_steering->turn_off("evade_activate");
-      _ai_char->_steering->turn_on("evade");
-      _evade_activate_done = true;
+  if(distance < _panic_distance) {
+    _active = true;
   }
 }

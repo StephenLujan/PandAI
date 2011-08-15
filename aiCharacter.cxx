@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    :  aiCharacter.cxx
-// Created by  :  Deepak, John, Navin
-// Date        :  8 Sep 09
+// Created by  :  Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -15,19 +15,19 @@
 
 #include "aiCharacter.h"
 
-AICharacter::AICharacter(string model_name, NodePath model_np, double mass, double movt_force, double max_force) {
+AICharacter::AICharacter(string model_name, NodePath model_np, double mass, double max_acceleration, double max_speed) {
   _name = model_name;
   _ai_char_np = model_np;
 
   _mass = mass;
-  _max_force = max_force;
-  _movt_force = movt_force;
-
+  _max_speed = max_speed;
+  _max_acceleration = max_acceleration;
+  _max_force = max_acceleration * mass;
   _velocity = LVecBase3f(0.0, 0.0, 0.0);
   _steering_force = LVecBase3f(0.0, 0.0, 0.0);
+  _delta_t = 0;
 
-  _steering = new AIBehaviors();
-  _steering->_ai_char = this;
+  _steering = new AIBehaviors(this);
 
   _pf_guide = false;
 }
@@ -40,44 +40,33 @@ AICharacter::~AICharacter() {
 // Function : update
 // Description : Each character's update will update its ai and physics
 //                based on his resultant steering force.
-//                This also makes the character  look at the direction of the force.
+//                This also makes the character look at the direction of the force.
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 void AICharacter::update() {
 
-  if(!_steering->is_off(_steering->_none)) {
 
-    LVecBase3f old_pos = _ai_char_np.get_pos();
+  LVecBase3f old_pos = _ai_char_np.get_pos();
+	
+	//previous physics didn't make sense and were frame rate dependent...
+	double time = 0.1; //ok still frame rate dependent so far
 
-    LVecBase3f steering_force = _steering->calculate_prioritized();
+  LVecBase3f acceleration = _steering->calculate_steering_force() * time;
 
-    LVecBase3f acceleration = steering_force / _mass;
+	_velocity += acceleration;
+	if (_velocity.length() > _max_speed)
+	  _velocity *= _max_speed / _velocity.length();
+  
+  LVecBase3f pos = old_pos + _velocity * time;
+  _ai_char_np.set_pos(pos);
 
-    _velocity = acceleration;
 
-    LVecBase3f direction = _steering->_steering_force;
-    direction.normalize();
-
-    _ai_char_np.set_pos(old_pos + _velocity) ;
-
-    if(steering_force.length() > 0) {
-      _ai_char_np.look_at(old_pos + (direction * 5));
-      _ai_char_np.set_h(_ai_char_np.get_h() + 180);
-      _ai_char_np.set_p(-_ai_char_np.get_p());
-      _ai_char_np.set_r(-_ai_char_np.get_r());
-    }
+  if(_velocity.length() > _max_speed / 20) {
+	  LVecBase3f facing = pos + _velocity; // face forward motion
+    _ai_char_np.look_at(facing);
   }
-  else {
-    _steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_seek_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_flee_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_pursue_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_evade_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_arrival_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_flock_force = LVecBase3f(0.0, 0.0, 0.0);
-    _steering->_wander_force = LVecBase3f(0.0, 0.0, 0.0);
-  }
+
 }
 
 LVecBase3f AICharacter::get_velocity() {
@@ -96,12 +85,28 @@ void AICharacter::set_mass(double m) {
   _mass = m;
 }
 
-double AICharacter::get_max_force() {
+double AICharacter::get_max_speed() {
+  return _max_speed;
+}
+
+void AICharacter::set_max_speed(double max_speed) {
+  _max_speed = max_speed;
+}
+
+double AICharacter::get_max_force(){
   return _max_force;
 }
 
-void AICharacter::set_max_force(double max_force) {
-  _max_force = max_force;
+void AICharacter::set_max_force(double max_force){
+	_max_force = max_force;
+}
+
+double AICharacter::get_max_acceleration(){
+  return _max_acceleration;
+}
+
+void AICharacter::set_max_acceleration(double max_acceleration){
+	_max_acceleration = max_acceleration;
 }
 
 NodePath AICharacter::get_node_path() {

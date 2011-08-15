@@ -1,8 +1,22 @@
+////////////////////////////////////////////////////////////////////////
+// Filename    : pathFollow.cxx
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
+////////////////////////////////////////////////////////////////////
+//
+// PANDA 3D SOFTWARE
+// Copyright (c) Carnegie Mellon University.  All rights reserved.
+//
+// All use of this software is subject to the terms of the revised BSD
+// license.  You should have received a copy of this license along
+// with this source code in a file named "LICENSE."
+//
+////////////////////////////////////////////////////////////////////
 
 #include "pathFollow.h"
 
-PathFollow::PathFollow(AICharacter *ai_ch, float follow_wt) {
-    _follow_weight = follow_wt;
+PathFollow::PathFollow(AICharacter *ai_ch, float max_weight)
+: SteeringObjective(ai_ch, max_weight){
   _curr_path_waypoint = -1;
   _start = false;
   _ai_char = ai_ch;
@@ -38,7 +52,7 @@ void PathFollow::start(string type) {
     _curr_path_waypoint = _path.size() - 1;
     _dummy = _ai_char->_window_render.attach_new_node("dummy");
     _dummy.set_pos(_path[_curr_path_waypoint]);
-    _ai_char->_steering->pursue(_dummy, _follow_weight);
+    _ai_char->_steering->pursue(_dummy, _weight);
     _time = _myClock->get_real_time();
   }
 }

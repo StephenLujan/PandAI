@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : evade.h
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -21,25 +21,20 @@
 
 class AICharacter;
 
-class EXPCL_PANDAAI Evade {
+class EXPCL_PANDAAI Evade : public SteeringObjective {
 
 public:
-  AICharacter *_ai_char;
-
   NodePath _evade_target;
-  float _evade_weight;
   LVecBase3f _evade_direction;
-  double _evade_distance;
-  double _evade_relax_distance;
-  bool _evade_done;
-  bool _evade_activate_done;
+  double _panic_distance;
+  double _relax_distance;
 
   Evade(AICharacter *ai_ch, NodePath target_object, double panic_distance,
-                                          double relax_distance, float evade_wt);
+                                          double relax_distance, float max_weight);
 
   ~Evade();
-  LVecBase3f do_evade();
-  void evade_activate();
+  LVecBase3f get_desired_velocity();
+  void activation_check();
 };
 
 #endif

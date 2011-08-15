@@ -19,18 +19,20 @@
     aiNode.h \
     aiPathFinder.h \
     aiWorld.h \
-    arrival.h \
     config_ai.h \
     evade.h \
     flee.h \
     flock.h \
-    aiGlobals.h \
+    flockObjective.h \
+    intercept.h \
     meshNode.h \
+    objectiveList.h \
     obstacleAvoidance.h \
     pathFind.h \
     pathFollow.h \
     pursue.h \
     seek.h \
+    steeringObjective.h \
     wander.h
 
   #define INCLUDED_SOURCES \
@@ -41,17 +43,20 @@
     aiWorld.cxx \
     ai_composite.cxx \
     ai_composite1.cxx \
-    arrival.cxx \
     config_ai.cxx \
     evade.cxx \
     flee.cxx \
     flock.cxx \
+    flockObjective.cxx \
+    intercept.cxx \
     meshNode.cxx \
+    objectiveList.cxx \
     obstacleAvoidance.cxx \
     pathFind.cxx \
     pathFollow.cxx \
     pursue.cxx \
     seek.cxx \
+    steeringObjective.cxx \
     wander.cxx
 
 
@@ -62,18 +67,20 @@
     aiNode.h \
     aiPathFinder.h \
     aiWorld.h \
-    arrival.h \
     config_ai.h \
     evade.h \
     flee.h \
     flock.h \
-    aiGlobals.h \
+    flockObjective.h \
+    intercept.h \
     meshNode.h \
+    objectiveList.h \
     obstacleAvoidance.h \
     pathFind.h \
     pathFollow.h \
     pursue.h \
     seek.h \
+    steeringObjective.h \
     wander.h
 
   #define IGATESCAN all

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : flee.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -16,94 +16,64 @@
 #include "flee.h"
 
 Flee::Flee(AICharacter *ai_ch, NodePath target_object, double panic_distance,
-                                      double relax_distance, float flee_wt){
-
-  _ai_char = ai_ch;
+                                      double relax_distance, float max_weight)
+: SteeringObjective(ai_ch, max_weight) {
 
   _flee_position = target_object.get_pos(_ai_char->_window_render);
-  _flee_distance = panic_distance;
-  _flee_weight = flee_wt;
-  _flee_relax_distance = relax_distance;
-
-  _flee_done = false;
-  _flee_activate_done = false;
+  _panic_distance = panic_distance;
+  _relax_distance = relax_distance;
 }
 
 Flee::Flee(AICharacter *ai_ch, LVecBase3f pos, double panic_distance,
-                                double relax_distance, float flee_wt){
-
-    _ai_char = ai_ch;
-
+                                double relax_distance, float _max_weight)
+: SteeringObjective(ai_ch, _max_weight) {
   _flee_position = pos;
-  _flee_distance = panic_distance;
-  _flee_weight = flee_wt;
-  _flee_relax_distance = relax_distance;
-
-  _flee_done = false;
-  _flee_activate_done = false;
+  _panic_distance = panic_distance;
+  _relax_distance = relax_distance;
 }
 
 Flee::~Flee() {
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////
 //
-// Function : do_flee
-// Description : This function performs the flee and returns a flee force which is used
-//                in the calculate_prioritized function.
-//                In case the AICharacter is past the (panic + relax) distance,
-//                it resets to flee_activate.
-//                This function is not to be used by the user.
-
+// Function : activation_check
+// Description :  This function will wake a Flee below panic distance
+//
 /////////////////////////////////////////////////////////////////////////////////
-
-LVecBase3f Flee::do_flee() {
-  LVecBase3f dirn;
-  double distance;
-  LVecBase3f desired_force;
-
-  dirn = _ai_char->_ai_char_np.get_pos(_ai_char->_window_render) - _flee_present_pos;
-  distance = dirn.length();
-  desired_force = _flee_direction * _ai_char->_movt_force;
-
-  if(distance > (_flee_distance + _flee_relax_distance)) {
-    if((_ai_char->_steering->_behaviors_flags | _ai_char->_steering->_flee) == _ai_char->_steering->_flee) {
-        _ai_char->_steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
-    }
-    _flee_done = true;
-    _ai_char->_steering->turn_off("flee");
-    _ai_char->_steering->turn_on("flee_activate");
-    return(LVecBase3f(0.0, 0.0, 0.0));
-  }
-  else {
-      return(desired_force);
-  }
+    
+void Flee::activation_check() {
+  LVecBase3f to_target = _flee_position - _ai_char->_ai_char_np.get_pos(_ai_char->_window_render);
+  if (to_target.length() < (_panic_distance + _relax_distance))
+    _active = true;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////
 //
-// Function : flee_activate
-// Description : This function checks for whether the target is within the panic distance.
-//                When this is true, it calls the do_flee function and sets the flee direction.
-//                This function is not to be used by the user.
-
+// Function : get_desired_velocity
+// Description :  This function performs the flee and returns a flee velocity which
+//                which is used in the get_desired_force() function, or an 
+//                ObjectiveList's get_desired_velocity function. It will also
+//                adjust weight with a linear drop-off toward its relax distance.
+//
 /////////////////////////////////////////////////////////////////////////////////
 
-void Flee::flee_activate() {
-  LVecBase3f dirn;
-  double distance;
+LVecBase3f Flee::get_desired_velocity() {
 
-  _flee_activate_done = false;
+  LVecBase3f to_target = _flee_position - _ai_char->_ai_char_np.get_pos(_ai_char->_window_render);
+  double distance = to_target.length();
 
-  dirn = (_ai_char->_ai_char_np.get_pos(_ai_char->_window_render) - _flee_position);
-  distance = dirn.length();
-
-  if(distance < _flee_distance) {
-      _flee_direction = _ai_char->_ai_char_np.get_pos(_ai_char->_window_render) - _flee_position;
-      _flee_direction.normalize();
-      _flee_present_pos = _ai_char->_ai_char_np.get_pos(_ai_char->_window_render);
-      _ai_char->_steering->turn_off("flee_activate");
-      _ai_char->_steering->turn_on("flee");
-      _flee_activate_done = true;
+  if(distance > (_panic_distance + _relax_distance)) {
+    _weight = 0.0;
+    _active = false;
+    return to_target; //returned value doesn't matter if weight is 0;
+  }
+  else {
+    _weight = _max_weight * distance / (_panic_distance + _relax_distance);
+    to_target.normalize();
+    LVecBase3f desired_velocity = to_target * -_ai_char->_max_speed;
+    return desired_velocity;
   }
 }

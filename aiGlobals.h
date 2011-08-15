@@ -1,9 +1,8 @@
 ////////////////////////////////////////////////////////////////////////
-// Filename :    aiGlobals.h
-// Created by :  Deepak, John, Navin
-// Date:          8 Sep 09
-//
-////////////////////////////////////////////////////////////////////
+// Filename    :    aiGlobals.h
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
+//////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
 // Copyright (c) Carnegie Mellon University.  All rights reserved.
@@ -20,6 +19,8 @@
 
 #ifndef _AI_GLOBALS_H
 #define _AI_GLOBALS_H
+
+static const double _PI = 3.14159265;
 
 #include "config_ai.h"
 #include "pandaFramework.h"

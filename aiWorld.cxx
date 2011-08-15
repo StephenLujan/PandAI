@@ -39,11 +39,13 @@ void AIWorld::remove_ai_char_from_flock(string name) {
   ai_pool = _ai_char_pool->_head;
   while((ai_pool) != NULL) {
     for(unsigned int i = 0; i < _flock_pool.size(); ++i) {
-      if(ai_pool->_ai_char->_ai_char_flock_id == _flock_pool[i]->get_id()) {
-        for(unsigned int j = 0; j<_flock_pool[i]->_ai_char_list.size(); ++j) {
-          if(_flock_pool[i]->_ai_char_list[j]->_name == name) {
-            _flock_pool[i]->_ai_char_list.erase(_flock_pool[i]->_ai_char_list.begin() + j);
-            return;
+      if (ai_pool->_ai_char->get_ai_behaviors()->_flock_obj != NULL) {
+        if(ai_pool->_ai_char->get_ai_behaviors()->_flock_obj->_flock_id == _flock_pool[i]->get_id()) {
+          for(unsigned int j = 0; j<_flock_pool[i]->_ai_char_list.size(); ++j) {
+            if(_flock_pool[i]->_ai_char_list[j]->_name == name) {
+              _flock_pool[i]->_ai_char_list.erase(_flock_pool[i]->_ai_char_list.begin() + j);
+              return;
+            }
           }
         }
       }
@@ -119,9 +121,9 @@ void AIWorld::remove_flock(unsigned int flock_id) {
   for(unsigned int i = 0; i < _flock_pool.size(); ++i) {
     if(_flock_pool[i]->get_id() == flock_id) {
        for(unsigned int j = 0; j < _flock_pool[i]->_ai_char_list.size(); ++j) {
-         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->turn_off("flock_activate");
-         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->turn_off("flock");
-         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->_flock_group = NULL;
+         //_flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->_flock_group->turn_off();
+         //memory leak?
+         delete _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->_flock_obj;
        }
        _flock_pool.erase(_flock_pool.begin() + i);
        break;
@@ -141,8 +143,7 @@ void AIWorld::flock_off(unsigned int flock_id) {
   for(unsigned int i = 0; i < _flock_pool.size(); ++i) {
     if(_flock_pool[i]->get_id() == flock_id) {
        for(unsigned int j = 0; j < _flock_pool[i]->_ai_char_list.size(); ++j) {
-         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->turn_off("flock_activate");
-         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->turn_off("flock");
+         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->_flock_obj->turn_off();
        }
        break;
     }
@@ -160,7 +161,7 @@ void AIWorld::flock_on(unsigned int flock_id) {
   for(unsigned int i = 0; i < _flock_pool.size(); ++i) {
     if(_flock_pool[i]->get_id() == flock_id) {
        for(unsigned int j = 0; j < _flock_pool[i]->_ai_char_list.size(); ++j) {
-         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->turn_on("flock_activate");
+         _flock_pool[i]->_ai_char_list[j]->get_ai_behaviors()->_flock_obj->turn_on();
        }
        break;
     }

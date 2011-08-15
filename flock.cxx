@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : flock.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  12 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -36,8 +36,9 @@ Flock::~Flock() {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 void Flock::add_ai_char(AICharacter *ai_char) {
-  ai_char->_ai_char_flock_id = _flock_id;
-  ai_char->_steering->_flock_group = this;
+  ai_char->_steering->flock(1.0);
+  ai_char->_steering->_flock_obj->_flock_group = this;
+  ai_char->_steering->_flock_obj->_flock_id = _flock_id;
   _ai_char_list.push_back(ai_char);
 }
 

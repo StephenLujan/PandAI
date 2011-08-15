@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : seek.h
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -18,24 +18,23 @@
 
 #include "aiGlobals.h"
 #include "aiCharacter.h"
+#include "steeringObjective.h"
 
 class AICharacter;
 
-class EXPCL_PANDAAI Seek {
+class EXPCL_PANDAAI Seek : public SteeringObjective {
+  public:
+    typedef SteeringObjective Parent;
+    bool _seek_done;
+    bool _arrival; //Are we trying to stop at or match speed with our target
+    LVecBase3f _seek_position;
 
-public:
-  AICharacter *_ai_char;
+    Seek(AICharacter *ai_ch, NodePath target_object, float max_weight = 1.0, bool arrival = true);
+    Seek(AICharacter *ai_ch, LVecBase3f pos, float max_weight = 1.0, bool arrival = true);
+    ~Seek();
 
-  LVecBase3f _seek_position;
-  float _seek_weight;
-  LVecBase3f _seek_direction;
-  bool _seek_done;
-  LVecBase3f _seek_accum_force;
-
-  Seek(AICharacter *ai_ch, NodePath target_object, float seek_wt = 1.0);
-  Seek(AICharacter *ai_ch, LVecBase3f pos, float seek_wt = 1.0);
-  ~Seek();
-  LVecBase3f do_seek();
+    LVecBase3f get_desired_velocity();
+    //get_desired_force is in SteeringObjective
 };
 
 #endif

@@ -1,10 +1,6 @@
-#ifndef OBSTACLE_AVOIDANCE_H
-#define OBSTACLE_AVOIDANCE_H
-
-////////////////////////////////////////////////////////////////////////
-// Filename    : obstacleAvoidance.h
-// Created by  : Deepak, John, Navin
-// Date        :  10 Nov 2009
+////////////////////////////////////////////////////////////////////////// Filename    : obstacleAvoidance.h
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -16,12 +12,15 @@
 //
 ////////////////////////////////////////////////////////////////////
 
+#ifndef OBSTACLE_AVOIDANCE_H
+#define OBSTACLE_AVOIDANCE_H
+
 #include "aiCharacter.h"
 #include "boundingSphere.h"
 
 class AICharacter;
 
-class EXPCL_PANDAAI ObstacleAvoidance {
+class EXPCL_PANDAAI ObstacleAvoidance : public SteeringObjective {
   public :
     AICharacter *_ai_char;
     float _obstacle_avoidance_weight;
@@ -30,9 +29,9 @@ class EXPCL_PANDAAI ObstacleAvoidance {
     float _feeler;
 
     ObstacleAvoidance(AICharacter *ai_char, float feeler_length);
-    LVecBase3f do_obstacle_avoidance();
     ~ObstacleAvoidance();
-    void obstacle_avoidance_activate();
+    LVecBase3f do_obstacle_avoidance();
+    void activation_check();
     bool obstacle_detection();
 };
 

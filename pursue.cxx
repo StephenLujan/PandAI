@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : pursue.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -15,12 +15,9 @@
 
 #include "pursue.h"
 
-Pursue::Pursue(AICharacter *ai_ch, NodePath target_object, float pursue_wt) {
-  _ai_char = ai_ch;
-
+Pursue::Pursue(AICharacter *ai_ch, NodePath target_object, float max_weight)
+: SteeringObjective(ai_ch, max_weight) {
   _pursue_target = target_object;
-  _pursue_weight = pursue_wt;
-
   _pursue_done = false;
 }
 
@@ -45,8 +42,6 @@ LVecBase3f Pursue::do_pursue() {
 
   if(int(target_distance) == 0) {
     _pursue_done = true;
-    _ai_char->_steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
-    _ai_char->_steering->_pursue_force = LVecBase3f(0.0, 0.0, 0.0);
     return(LVecBase3f(0.0, 0.0, 0.0));
   }
   else {
@@ -56,6 +51,6 @@ LVecBase3f Pursue::do_pursue() {
   _pursue_direction = _pursue_target.get_pos(_ai_char->_window_render) - present_pos;
   _pursue_direction.normalize();
 
-  LVecBase3f desired_force = _pursue_direction * _ai_char->_movt_force;
+  LVecBase3f desired_force = _pursue_direction * _ai_char->_max_force;
   return(desired_force);
 }

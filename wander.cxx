@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : wander.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -39,10 +39,9 @@ double random_clamped() {
   return  (rand_float() - rand_float());
 }
 
-Wander::Wander(AICharacter *ai_ch, double wander_radius,int flag, double aoe, float wander_weight) {
-  _ai_char = ai_ch;
-  _wander_radius = wander_radius ;
-  _wander_weight = wander_weight;
+Wander::Wander(AICharacter *ai_ch, double wander_radius,int flag, double aoe, float max_weight) 
+: SteeringObjective(ai_ch, max_weight){
+  _wander_radius = wander_radius;
   double theta = rand_float() * 2 * 3.14159;
   double si = rand_float() * 3.14159;
   _flag = flag;
@@ -126,17 +125,17 @@ LVecBase3f Wander::do_wander() {
   // Project wander target onto global space
   target = _wander_target + target;
   LVecBase3f desired_target = present_pos + target;
-  LVecBase3f desired_force = desired_target - _ai_char->get_node_path().get_pos() ;
-  desired_force.normalize();
-  desired_force *= _ai_char->_movt_force;
+  LVecBase3f desired_velocity = desired_target - _ai_char->get_node_path().get_pos() ;
+  desired_velocity.normalize();
+  desired_velocity *= _ai_char->_max_speed;
   double distance = (present_pos - _init_pos).length();
   if(_area_of_effect > 0 && distance > _area_of_effect) {
     LVecBase3f direction = present_pos - _init_pos;
     direction.normalize();
-    desired_force =  - direction * _ai_char->_movt_force;
-    LVecBase3f dirn = _ai_char->_steering->_steering_force;
-    dirn.normalize();
-    _ai_char->_steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
+    desired_velocity =  - direction * _ai_char->_max_speed;
+    //LVecBase3f dirn = _ai_char->_steering->_steering_force;
+    //dirn.normalize();
+    //_ai_char->_steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
   }
-  return desired_force;
+  return desired_velocity;
 }

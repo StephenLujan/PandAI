@@ -1,7 +1,22 @@
+////////////////////////////////////////////////////////////////////////
+// Filename    : pathFind.cxx
+// Created by  : Deepak, John, Navin
+// Date        :  12 Oct 09
+////////////////////////////////////////////////////////////////////
+//
+// PANDA 3D SOFTWARE
+// Copyright (c) Carnegie Mellon University.  All rights reserved.
+//
+// All use of this software is subject to the terms of the revised BSD
+// license.  You should have received a copy of this license along
+// with this source code in a file named "LICENSE."
+//
+////////////////////////////////////////////////////////////////////
 
 #include "pathFind.h"
 
-PathFind::PathFind(AICharacter *ai_ch) {
+PathFind::PathFind(AICharacter *ai_ch)
+: SteeringObjective(ai_ch, 1.0){
   _ai_char = ai_ch;
 
   _parent = new GeomNode("parent");

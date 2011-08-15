@@ -20,7 +20,7 @@
 #include "flee.h"
 #include "pursue.h"
 #include "evade.h"
-#include "arrival.h"
+//#include "arrival.h" Already implemented in pursue/seek
 #include "flock.h"
 #include "wander.h"
 #include "pathFollow.h"

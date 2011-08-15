@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
-// Filename    : pursue.h
-// Created by  : Deepak, John, Navin, Stephen
-// Date        :  17 Aug 11
+// Filename    : Intercept.h
+// Created by  : Stephen Lujan
+// Date        : March 9th 2011
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -13,24 +13,13 @@
 //
 ////////////////////////////////////////////////////////////////////
 
-#ifndef _PURSUE_H
-#define _PURSUE_H
+#ifndef _INTERCEPT_H
+#define _INTERCEPT_H
 
 #include "aiGlobals.h"
-#include "aiCharacter.h"
 
-class AICharacter;
+double target_to_intercept( double distance_to_target, double target_angle, double target_speed, double pursuer_speed);
 
-class EXPCL_PANDAAI Pursue : public SteeringObjective {
-
-public:
-  NodePath _pursue_target;
-  LVecBase3f _pursue_direction;
-  bool _pursue_done;
-
-  Pursue(AICharacter *ai_ch, NodePath target_object, float max_weight);
-  ~Pursue();
-  LVecBase3f do_pursue();
-};
+LVecBase3f find_intercept( LVecBase3f target_pos, LVecBase3f pursuer_pos, LVecBase3f target_velocity, double pursuer_speed);
 
 #endif

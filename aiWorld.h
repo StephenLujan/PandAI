@@ -24,6 +24,7 @@
 #include "aiGlobals.h"
 #include "aiCharacter.h"
 #include "flock.h"
+#include "flockObjective.h"
 
 class AICharacter;
 class Flock;

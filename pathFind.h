@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////////
 // Filename    : pathFind.h
 // Created by  : Deepak, John, Navin
@@ -33,7 +32,8 @@ class AICharacter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class EXPCL_PANDAAI PathFind {
+//this inheritance is a bit weird but unavoidable for now
+class EXPCL_PANDAAI PathFind : public SteeringObjective {
 public:
   AICharacter *_ai_char;
   PathFinder *_path_finder_obj;

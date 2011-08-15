@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : seek.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  24 Oct 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -15,28 +15,20 @@
 
 #include "seek.h"
 
-Seek::Seek(AICharacter *ai_ch, NodePath target_object, float seek_wt) {
-  _ai_char = ai_ch;
+Seek::Seek(AICharacter *ai_ch, NodePath target_object, float max_weight, bool arrival)
+: SteeringObjective(ai_ch, max_weight) {
 
   _seek_position = target_object.get_pos(_ai_char->_window_render);
-  _seek_weight = seek_wt;
-
-  _seek_direction = _seek_position - _ai_char->_ai_char_np.get_pos(_ai_char->_window_render);
-  _seek_direction.normalize();
-
   _seek_done = false;
+  _arrival = arrival;
 }
 
-Seek::Seek(AICharacter *ai_ch, LVecBase3f pos, float seek_wt) {
-      _ai_char = ai_ch;
+Seek::Seek(AICharacter *ai_ch, LVecBase3f pos, float max_weight, bool arrival)
+: SteeringObjective(ai_ch, max_weight) {
 
   _seek_position = pos;
-  _seek_weight = seek_wt;
-
-  _seek_direction = _seek_position - _ai_char->_ai_char_np.get_pos(_ai_char->_window_render);
-  _seek_direction.normalize();
-
   _seek_done = false;
+  _arrival = arrival;
 }
 
 Seek::~Seek() {
@@ -44,23 +36,33 @@ Seek::~Seek() {
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// Function : do_seek
-// Description : This function performs the seek and returns a seek force which is used
-//                in the calculate_prioritized function.
-//                This function is not to be used by the user.
-
+// Function : get_desired_velocity
+// Description :  This function performs the seek and returns a seek velocity which
+//                which is used in the get_desired_force() function, or an 
+//                ObjectiveList's get_desired_velocity function.
+//
 /////////////////////////////////////////////////////////////////////////////////
 
-LVecBase3f Seek::do_seek() {
-  double target_distance = (_seek_position - _ai_char->_ai_char_np.get_pos(_ai_char->_window_render)).length();
+LVecBase3f Seek::get_desired_velocity() {
 
-    if(int(target_distance) == 0) {
-        _seek_done = true;
-    _ai_char->_steering->_steering_force = LVecBase3f(0.0, 0.0, 0.0);
-    _ai_char->_steering->turn_off("seek");
+  LVecBase3f to_target = _seek_position - _ai_char->_ai_char_np.get_pos(_ai_char->_window_render);
+  double target_distance = to_target.length();
+
+  if(int(target_distance) == 0) {
+    _seek_done = true;
+    _weight = 0;
     return(LVecBase3f(0.0, 0.0, 0.0));
   }
+  _weight = _max_weight;
+  to_target.normalize();
 
-  LVecBase3f desired_force = _seek_direction * _ai_char->_movt_force;
-  return(desired_force);
+  double speed = _ai_char->_max_speed;
+  if (_arrival) {
+    double stoppingSpeed = get_max_stopping_speed(target_distance);
+    if (stoppingSpeed < speed)
+      speed = stoppingSpeed;
+  }
+
+  LVecBase3f desired_velocity = to_target * speed;
+  return(desired_velocity);
 }

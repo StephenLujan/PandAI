@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // Filename    : obstacleAvoidance.cxx
-// Created by  : Deepak, John, Navin
-// Date        :  10 Nov 09
+// Created by  : Deepak, John, Navin, Stephen
+// Date        :  17 Aug 11
 ////////////////////////////////////////////////////////////////////
 //
 // PANDA 3D SOFTWARE
@@ -15,8 +15,8 @@
 
 #include "obstacleAvoidance.h"
 
-ObstacleAvoidance::ObstacleAvoidance(AICharacter *ai_char, float feeler_length) {
-  _ai_char = ai_char;
+ObstacleAvoidance::ObstacleAvoidance(AICharacter *ai_char, float feeler_length)
+: SteeringObjective(ai_char, 2.0){
   _feeler = feeler_length;
 }
 
@@ -65,20 +65,20 @@ bool ObstacleAvoidance::obstacle_detection() {
      return false;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////
 //
-// Function : obstacle_avoidance_activate
-// Description : This function activates obstacle_avoidance if a obstacle
-//               is detected
-
+// Function : activation_check
+// Description :  This function will wake a Flee below panic distance
+//
 /////////////////////////////////////////////////////////////////////////////////
-
-void ObstacleAvoidance::obstacle_avoidance_activate() {
-  if(obstacle_detection()) {
-    _ai_char->_steering->turn_off("obstacle_avoidance_activate");
-    _ai_char->_steering->turn_on("obstacle_avoidance");
-  }
+    
+void ObstacleAvoidance::activation_check() {
+  
+  if (obstacle_detection())
+    _active = true;
 }
+
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -107,10 +107,9 @@ LVecBase3f ObstacleAvoidance::do_obstacle_avoidance() {
     perpendicular_component.normalize();
     LVecBase3f   avoidance = perpendicular_component;
     // The more closer the obstacle, the more force it generates
-    avoidance = (avoidance * _ai_char->get_max_force() * _ai_char->_movt_force) / (p + 0.01);
+    avoidance = (avoidance * _ai_char->get_max_force() * _ai_char->get_max_speed()) / (p + 0.01);
     return avoidance;
   }
-  _ai_char->_steering->turn_on("obstacle_avoidance_activate");
-  _ai_char->_steering->turn_off("obstacle_avoidance");
+  _active = false;
   return LVecBase3f(0, 0, 0);
 }
