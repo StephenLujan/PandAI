@@ -41,6 +41,7 @@
 #ifndef _OBJECTIVE_LIST_H
 #define _OBJECTIVE_LIST_H
 
+class AICharacter;
 #include "aiGlobals.h"
 #include "steeringObjective.h"
 

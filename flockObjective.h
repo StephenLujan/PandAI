@@ -17,7 +17,6 @@
 #define _FLOCK_OBJECTIVE_H
 
 #include "aiGlobals.h"
-#include "aiCharacter.h"
 #include "flock.h"
 #include "steeringObjective.h"
 

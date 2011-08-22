@@ -14,6 +14,7 @@
 ////////////////////////////////////////////////////////////////////
 
 #include "flockObjective.h"
+#include "aiCharacter.h"
 
 
 FlockObjective::FlockObjective(AICharacter *ai_ch, float max_weight)

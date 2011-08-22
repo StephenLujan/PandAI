@@ -17,7 +17,7 @@
 #define _FLOCK_H
 
 #include "aiGlobals.h"
-#include "aiCharacter.h"
+//#include "aiCharacter.h"
 
 class AICharacter;
 

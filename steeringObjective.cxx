@@ -14,6 +14,7 @@
 ////////////////////////////////////////////////////////////////////
 
 #include "steeringObjective.h"
+//#include "aiCharacter.h"
 
 SteeringObjective::SteeringObjective(AICharacter *ai_ch, float max_weight){
   _ai_char = ai_ch;

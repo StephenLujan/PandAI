@@ -32,21 +32,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class AICharacter;
-#include "aiGlobals.h"
-#include "steeringObjective.h"
-#include "objectiveList.h"
-#include "Seek.h"
-#include "Flee.h"
-#include "Pursue.h"
-#include "Evade.h"
-#include "Flock.h"
-#include "Wander.h"
-#include "PathFollow.h"
-#include "PathFind.h"
-#include "ObstacleAvoidance.h"
-#include "FlockObjective.h"
 
+#include "aiGlobals.h"
+class SteeringObjective;
+class AICharacter;
+class PathFollow;
+class PathFind;
+class FlockObjective;
 
 class EXPCL_PANDAAI AIBehaviors : public ObjectiveList {
 
